@@ -1,0 +1,1 @@
+document.querySelector('#open').onclick = async () => { const response = await fetch('/api/approvals'); document.querySelector('#approvals').textContent = JSON.stringify(await response.json(), null, 2); };

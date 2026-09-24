@@ -1,0 +1,8 @@
+import {createServer} from 'node:http';
+import {createApprovalStore, decide, submit, updateSource} from './src/approval-ledger.mjs';
+let store = createApprovalStore(); store = updateSource(store, 'change-a', {amount: 10});
+async function body(req) { let text = ''; for await (const part of req) text += part; return JSON.parse(text || '{}'); }
+function json(res, code, value) { res.writeHead(code, {'content-type': 'application/json'}); res.end(JSON.stringify(value)); }
+const app = createServer(async (req, res) => { const url = new URL(req.url ?? '/', 'http://localhost'); try { if (url.pathname === '/api/source' && req.method === 'PUT') { const item = await body(req); store = updateSource(store, item.id, item.value); return json(res, 200, store.current.get(item.id)); } if (url.pathname === '/api/submissions' && req.method === 'POST') { const item = await body(req); store = submit(store, item.id, item.evidence); return json(res, 201, store.submissions.get([...store.submissions.keys()].at(-1))); } if (url.pathname === '/api/decisions' && req.method === 'POST') { const item = await body(req); store = decide(store, item.submissionId, item.outcome); return json(res, 201, store.decisions.at(-1)); } if (url.pathname === '/api/approvals' && req.method === 'GET') return json(res, 200, {current: [...store.current], submissions: [...store.submissions.values()], decisions: store.decisions}); return json(res, 404, {error: 'not found'}); } catch (error) { return json(res, 409, {error: error.message}); } });
+if (import.meta.url === `file://${process.argv[1]}`) app.listen(Number(process.env.PORT ?? 4184));
+export {app};
