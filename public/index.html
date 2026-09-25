@@ -1,1 +1,66 @@
-<!doctype html><html><body><main><h1>Approval evidence review</h1><button id="open">Open pending evidence</button><pre id="approvals"></pre></main><script type="module" src="/app.js"></script></body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Approval evidence review</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>Approval evidence review</h1>
+    <div class="identity">
+      <label>当前用户
+        <select id="actor">
+          <option value="alice">alice（可提交 / 可审批）</option>
+          <option value="carol">carol（仅审批）</option>
+          <option value="bob">bob（仅提交）</option>
+        </select>
+      </label>
+      <span id="live" class="live live-on" title="实时连接状态">实时 ●</span>
+      <button id="refresh" type="button">刷新</button>
+    </div>
+    <p id="perms" class="perms"></p>
+  </header>
+
+  <section class="panel">
+    <h2>直接保存（原路径，不经审批）</h2>
+    <form id="direct-form" class="row">
+      <input name="id" value="change-a" required>
+      <input name="value" value='{"amount":10}' required>
+      <button type="submit">直接保存</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>提交需审批变更（冻结证据）</h2>
+    <form id="submit-form" class="row">
+      <input name="objectId" value="change-a" required>
+      <input name="input" value='{"amount":750}' required>
+      <select name="rule" id="rule-select"></select>
+      <button type="submit">提交并冻结证据</button>
+    </form>
+    <p class="hint">提交时服务端执行规则、保存输入、规则版本与全部摘要；审批执行的是冻结值，不是当前值。</p>
+  </section>
+
+  <section class="panel">
+    <h2>当前对象（live）</h2>
+    <pre id="current" class="codeblock"></pre>
+  </section>
+
+  <section class="panel">
+    <h2>待审批</h2>
+    <div id="pending"></div>
+  </section>
+
+  <section class="panel">
+    <h2>已结束的审批（可回放）</h2>
+    <div id="finished"></div>
+  </section>
+
+  <div id="banner" class="banner hidden" role="alert"></div>
+</main>
+<script type="module" src="/app.js"></script>
+</body>
+</html>

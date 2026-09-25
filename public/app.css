@@ -1,0 +1,58 @@
+:root { font-family: system-ui, -apple-system, sans-serif; color: #1c2330; }
+body { margin: 0; background: #f5f6f8; }
+main { max-width: 1000px; margin: 0 auto; padding: 16px 20px 80px; }
+h1 { font-size: 20px; margin: 8px 0; }
+h2 { font-size: 15px; margin: 0 0 10px; text-transform: uppercase; letter-spacing: .04em; color: #5a6577; }
+header { margin-bottom: 8px; }
+.identity { display: flex; align-items: center; gap: 12px; }
+.identity select { padding: 4px; }
+.perms { font-size: 13px; color: #5a6577; margin: 6px 0; }
+.live { font-size: 13px; }
+.live-on { color: #1a8a42; }
+.live-off { color: #b3402e; }
+.panel { background: #fff; border: 1px solid #e2e5ea; border-radius: 8px; padding: 14px 16px; margin: 12px 0; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.row input { flex: 1 1 140px; min-width: 120px; padding: 6px 8px; border: 1px solid #c9ced8; border-radius: 6px; font-family: ui-monospace, monospace; font-size: 13px; }
+.row select, button { padding: 6px 10px; border-radius: 6px; border: 1px solid #c9ced8; background: #fff; cursor: pointer; }
+button.primary { background: #2456d6; color: #fff; border-color: #2456d6; }
+button.danger { background: #fff; color: #b3402e; border-color: #d99; }
+button:disabled { opacity: .55; cursor: not-allowed; }
+.hint { font-size: 12px; color: #7a8496; margin: 8px 0 0; }
+.codeblock { background: #0f1521; color: #d6e1ff; padding: 10px 12px; border-radius: 6px; font-size: 12px; overflow-x: auto; margin: 0; }
+.submission { border: 1px solid #e2e5ea; border-radius: 8px; padding: 12px; margin: 10px 0; }
+.submission.conflict { border-color: #e0a23b; background: #fffaf0; }
+.submission.evidence-bad { border-color: #d99; background: #fef5f4; }
+.submission.approved { border-left: 4px solid #1a8a42; }
+.submission.rejected, .submission.withdrawn { border-left: 4px solid #b3402e; }
+.sub-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.sub-title { font-weight: 600; }
+.badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid #c9ced8; }
+.badge-pending { background: #eef2ff; border-color: #b9c6f2; }
+.badge-approved { background: #e8f6ee; border-color: #9bd4b3; }
+.badge-rejected, .badge-withdrawn { background: #fdecea; border-color: #f0b4ac; }
+.badge-conflict { background: #fff3da; border-color: #e0a23b; }
+.badge-legacy { background: #f0f0f2; border-color: #c9ced8; }
+.tabs { display: flex; gap: 4px; margin: 10px 0 8px; }
+.tabs button { border-bottom: 2px solid transparent; border-radius: 0; }
+.tabs button.active { border-bottom-color: #2456d6; font-weight: 600; }
+.tabpane { display: none; }
+.tabpane.active { display: block; }
+.problem { color: #9a2d1e; background: #fdecea; border: 1px solid #f0b4ac; border-radius: 6px; padding: 6px 10px; margin: 6px 0; font-size: 13px; }
+.problem .field { font-family: ui-monospace, monospace; font-weight: 700; }
+.ok { color: #1a6f38; font-size: 13px; }
+.fail { color: #b3402e; font-size: 13px; }
+.diff-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 6px; }
+.diff-table th, .diff-table td { border: 1px solid #e6e9ef; padding: 5px 8px; text-align: left; vertical-align: top; }
+.diff-table .changed { background: #fff3da; }
+.diff-table .removed { background: #fdecea; }
+.diff-table .added { background: #e8f6ee; }
+.kv { font-size: 13px; color: #424c5e; margin: 4px 0; }
+.kv code { background: #f0f2f6; padding: 0 4px; border-radius: 4px; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; align-items: center; }
+.actions input[type=text] { padding: 6px 8px; border: 1px solid #c9ced8; border-radius: 6px; flex: 1 1 200px; }
+.state-note { font-size: 12.5px; color: #7a8496; font-style: italic; }
+.banner { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); padding: 10px 18px; border-radius: 8px; font-size: 14px; box-shadow: 0 4px 16px rgba(0,0,0,.15); max-width: 80%; }
+.banner.error { background: #b3402e; color: #fff; }
+.banner.success { background: #1a6f38; color: #fff; }
+.hidden { display: none; }
+details summary { cursor: pointer; font-size: 13px; color: #2456d6; }
