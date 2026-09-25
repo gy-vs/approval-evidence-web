@@ -10,3 +10,4 @@ coverage/
 *.p12
 *.log
 .DS_Store
+data/

@@ -1,1 +1,118 @@
-<!doctype html><html><body><main><h1>Approval evidence review</h1><button id="open">Open pending evidence</button><pre id="approvals"></pre></main><script type="module" src="/app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Approval evidence review</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 14px/1.5 system-ui, sans-serif; background: #f5f6f8; color: #1f2430; }
+    header { background: #1f2430; color: #fff; padding: 12px 20px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+    header h1 { font-size: 16px; margin: 0; flex: 1; }
+    header select, header input { padding: 4px 8px; border-radius: 6px; border: 1px solid #4a5168; background: #2b3040; color: #fff; }
+    #live { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: #234; }
+    #live.online { background: #1d5c3d; }
+    #live.offline { background: #6b2d2d; }
+    main { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+    section { background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: #5a6178; margin: 0 0 12px; }
+    label { display: block; font-size: 12px; color: #5a6178; margin: 8px 0 2px; }
+    input[type=text], input[type=number], textarea, select { width: 100%; padding: 6px 8px; border: 1px solid #c8ccd8; border-radius: 6px; font: inherit; }
+    textarea { min-height: 70px; font-family: ui-monospace, monospace; font-size: 12px; }
+    button { padding: 6px 14px; border-radius: 6px; border: 1px solid #2b4f9e; background: #2b5fc7; color: #fff; cursor: pointer; font: inherit; }
+    button.secondary { background: #fff; color: #2b4f9e; }
+    button.danger { background: #b23b3b; border-color: #912e2e; }
+    button.ghost { background: transparent; color: #5a6178; border-color: #c8ccd8; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    .row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .submission { border: 1px solid #e2e4ec; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; }
+    .submission:hover { border-color: #2b5fc7; }
+    .submission.active { border-color: #2b5fc7; box-shadow: 0 0 0 1px #2b5fc7 inset; }
+    .submission .top { display: flex; justify-content: space-between; gap: 8px; }
+    .badge { font-size: 11px; padding: 1px 8px; border-radius: 999px; font-weight: 600; white-space: nowrap; }
+    .badge.pending { background: #eef3ff; color: #2b4f9e; }
+    .badge.approved { background: #e3f5ea; color: #1d5c3d; }
+    .badge.rejected { background: #fbeaea; color: #8f2b2b; }
+    .badge.withdrawn { background: #eceef4; color: #5a6178; }
+    .badge.superseded { background: #fff4e0; color: #8a5a12; }
+    .flag { font-size: 11px; padding: 1px 6px; border-radius: 4px; margin-left: 4px; }
+    .flag.stale { background: #fff4e0; color: #8a5a12; }
+    .flag.damaged { background: #fbeaea; color: #8f2b2b; }
+    .meta { font-size: 12px; color: #5a6178; }
+    .tabs { display: flex; gap: 4px; border-bottom: 1px solid #e2e4ec; margin-bottom: 12px; }
+    .tab { padding: 8px 14px; border: none; background: none; color: #5a6178; border-bottom: 2px solid transparent; border-radius: 0; }
+    .tab.active { color: #2b4f9e; border-bottom-color: #2b5fc7; font-weight: 600; }
+    pre { background: #141826; color: #d8dce8; padding: 12px; border-radius: 8px; overflow: auto; font-size: 12px; max-height: 420px; }
+    pre .missing { background: #5c1f1f; color: #ffd9d9; border-radius: 3px; padding: 0 3px; }
+    .kv { display: grid; grid-template-columns: 150px 1fr; gap: 4px 12px; font-size: 13px; margin-bottom: 10px; }
+    .kv dt { color: #5a6178; }
+    .kv dd { margin: 0; font-family: ui-monospace, monospace; word-break: break-all; }
+    .banner { padding: 8px 12px; border-radius: 8px; margin: 8px 0; font-size: 13px; }
+    .banner.error { background: #fbeaea; color: #8f2b2b; border: 1px solid #e8c4c4; }
+    .banner.warn { background: #fff4e0; color: #8a5a12; border: 1px solid #ecd9b0; }
+    .banner.ok { background: #e3f5ea; color: #1d5c3d; }
+    .decision { border-left: 3px solid #c8ccd8; padding: 6px 10px; margin: 8px 0; font-size: 13px; }
+    .decision.approved { border-color: #1d5c3d; }
+    .decision.rejected, .decision.withdrawn { border-color: #8f2b2b; }
+    .muted { color: #8a90a4; font-size: 12px; }
+    .diff-path { font-family: ui-monospace, monospace; font-size: 12px; background: #fdf0e8; padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 2px 4px 2px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Approval evidence review</h1>
+    <label style="margin:0;color:#cdd3e6">Reviewing as
+      <select id="actor">
+        <option value="">(no actor header)</option>
+        <option value="alice">alice — submitter</option>
+        <option value="bob" selected>bob — approver</option>
+        <option value="carol">carol — no permissions</option>
+      </select>
+    </label>
+    <span id="live" class="offline">live: connecting…</span>
+  </header>
+
+  <main>
+    <div>
+      <section id="submit-section">
+        <h2>Submit change</h2>
+        <label>Object id</label>
+        <input type="text" id="f-object" value="change-a">
+        <label>Proposed value (JSON)</label>
+        <textarea id="f-proposed">{"amount": 25, "reason": "demo increase"}</textarea>
+        <label>Rule version</label>
+        <input type="text" id="f-rule" value="amount-rule/v1">
+        <label>Inputs (JSON)</label>
+        <textarea id="f-inputs">{"form": {"amount": 25}, "computed": {"delta": 15}}</textarea>
+        <label>Computed summary (JSON)</label>
+        <textarea id="f-summary">{"proposedAmount": 25, "delta": 15, "ruleOutput": {"withinLimit": true}}</textarea>
+        <div class="row"><button id="submit-btn">Freeze &amp; submit</button></div>
+        <div id="submit-msg"></div>
+      </section>
+
+      <section style="margin-top:16px">
+        <h2>Objects &amp; direct save</h2>
+        <label>Direct-save value for object (bypasses approval)</label>
+        <textarea id="d-value">{"amount": 99}</textarea>
+        <div class="row"><button class="secondary" id="direct-btn">PUT /api/source</button></div>
+      </section>
+
+      <section style="margin-top:16px">
+        <h2>Queue</h2>
+        <div id="queue"><p class="muted">Loading…</p></div>
+      </section>
+    </div>
+
+    <div>
+      <section id="review-section">
+        <h2>Evidence review</h2>
+        <div id="review"><p class="muted">Select a submission from the queue.</p></div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
